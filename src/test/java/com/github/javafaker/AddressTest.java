@@ -9,11 +9,21 @@ import java.util.Random;
 import static com.github.javafaker.matchers.IsANumber.isANumber;
 import static com.github.javafaker.matchers.MatchesRegularExpression.matchesRegularExpression;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class AddressTest extends AbstractFakerTest {
 
     private static final char decimalSeparator = new DecimalFormatSymbols().getDecimalSeparator();
+
+    @Test
+    public void testStreetAddressOptional() {
+        final String streetAddressNumber = faker.optional(1.0).address().streetAddress();
+        assertThat(streetAddressNumber, equalTo(""));
+
+        final String streetAddressNumberOverrideDefault = faker.optional(1.0, "N/A").address().streetAddress();
+        assertThat(streetAddressNumberOverrideDefault, equalTo("N/A"));
+    }
 
     @Test
     public void testStreetAddressStartsWithNumber() {
@@ -25,6 +35,12 @@ public class AddressTest extends AbstractFakerTest {
     public void testStreetAddressIsANumber() {
         final String streetAddressNumber = faker.address().streetAddressNumber();
         assertThat(streetAddressNumber, matchesRegularExpression("[0-9]+"));
+    }
+
+    @Test
+    public void testLatitudeOptional() {
+        final String latitude = faker.optional(1.0, "N/A").address().latitude();
+        assertThat(latitude, equalTo("N/A"));
     }
 
     @Test

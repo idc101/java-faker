@@ -78,10 +78,16 @@ public class Address {
     }
 
     public String latitude() {
+        if (faker.fakeValuesService().isNextOptional()) {
+            return faker.fakeValuesService().getOptionalValue();
+        }
         return String.format("%.8g", (faker.random().nextDouble() * 180) - 90);
     }
 
     public String longitude() {
+        if (faker.fakeValuesService().isNextOptional()) {
+            return faker.fakeValuesService().getOptionalValue();
+        }
         return String.format("%.8g", (faker.random().nextDouble() * 360) - 180);
     }
 

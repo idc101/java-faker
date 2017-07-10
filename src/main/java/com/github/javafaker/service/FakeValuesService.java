@@ -26,6 +26,10 @@ public class FakeValuesService {
     
     private final RandomService randomService;
 
+    private final double percentageOptional;
+
+    private final String optionalValue;
+
     /**
      * <p>
      *     Resolves YAML file using the most specific path first based on language and country code.
@@ -79,6 +83,32 @@ public class FakeValuesService {
         }
 
         this.fakeValuesMaps = Collections.unmodifiableList(all);
+
+        this.percentageOptional = 0.0;
+        this.optionalValue = "";
+    }
+
+    public FakeValuesService(FakeValuesService fakeValuesService, double percentageOptional, String optionalValue) {
+        this.fakeValuesMaps = fakeValuesService.fakeValuesMaps;
+        this.randomService = fakeValuesService.randomService;
+        this.percentageOptional = percentageOptional;
+        this.optionalValue = optionalValue;
+    }
+
+    public RandomService random() {
+        return this.randomService;
+    }
+
+    public double getPercentageOptional() {
+        return percentageOptional;
+    }
+
+    public String getOptionalValue() {
+        return optionalValue;
+    }
+
+    public boolean isNextOptional() {
+        return this.randomService.nextDouble() < percentageOptional;
     }
 
     /**
@@ -236,6 +266,10 @@ public class FakeValuesService {
      * @return
      */
     public String numerify(String numberString) {
+        if (isNextOptional()) {
+            return optionalValue;
+        }
+
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < numberString.length(); i++) {
             if (numberString.charAt(i) == '#') {
@@ -256,6 +290,10 @@ public class FakeValuesService {
      * @return
      */
     public String bothify(String string) {
+        if (isNextOptional()) {
+            return optionalValue;
+        }
+
         return letterify(numerify(string));
     }
 
@@ -268,6 +306,10 @@ public class FakeValuesService {
      * @return
      */
     public String bothify(String string, boolean isUpper) {
+        if (isNextOptional()) {
+            return optionalValue;
+        }
+
         return letterify(numerify(string), isUpper);
     }
 
@@ -275,6 +317,10 @@ public class FakeValuesService {
      * Generates a String that matches the given regular expression.
      */
     public String regexify(String regex) {
+        if (isNextOptional()) {
+            return optionalValue;
+        }
+
         Generex generex = new Generex(regex);
         generex.setSeed(randomService.nextLong());
         return generex.random();
@@ -290,6 +336,10 @@ public class FakeValuesService {
      * @return
      */
     public String letterify(String letterString) {
+        if (isNextOptional()) {
+            return optionalValue;
+        }
+
         return this.letterify(letterString, false);
     }
 
@@ -304,6 +354,10 @@ public class FakeValuesService {
      * @return
      */
     public String letterify(String letterString, boolean isUpper) {
+        if (isNextOptional()) {
+            return optionalValue;
+        }
+
         return letterHelper((isUpper) ? 65 : 97, letterString); // from ascii table
     }
 
@@ -329,6 +383,10 @@ public class FakeValuesService {
      *
      */
     public String resolve(String key, Object current, Faker root) {
+        if (isNextOptional()) {
+            return optionalValue;
+        }
+
         final String expression = safeFetch(key, null);
         if (expression == null) {
             throw new RuntimeException(key + " resulted in null expression");

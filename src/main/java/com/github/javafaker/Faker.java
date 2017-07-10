@@ -13,7 +13,6 @@ import java.util.Random;
  * @author ren
  */
 public class Faker {
-    private final RandomService randomService;
     private final FakeValuesService fakeValuesService;
 
     private final Ancient ancient;
@@ -81,8 +80,11 @@ public class Faker {
     }
 
     public Faker(Locale locale, Random random) {
-        this.randomService = new RandomService(random);
-        this.fakeValuesService = new FakeValuesService(locale, randomService);
+        this(new FakeValuesService(locale, new RandomService(random)));
+    }
+
+    private Faker(FakeValuesService fakeValuesService) {
+        this.fakeValuesService = fakeValuesService;
 
         this.ancient = new Ancient(this);
         this.app = new App(this);
@@ -177,6 +179,19 @@ public class Faker {
         return new Faker(locale, random);
     }
 
+    public Faker optional(double percentageOptional) {
+        final String defaultOptionalValue = "";
+
+        return optional(percentageOptional, defaultOptionalValue);
+    }
+
+    public Faker optional(double percentageOptional, String optionalValue) {
+        FakeValuesService newFakeValuesService = new FakeValuesService(this.fakeValuesService, percentageOptional,
+                optionalValue);
+
+        return new Faker(newFakeValuesService);
+    }
+
     /**
      * Returns a string with the '#' characters in the parameter replaced with random digits between 0-9 inclusive.
      * <p>
@@ -247,7 +262,7 @@ public class Faker {
     }
 
     public RandomService random() {
-        return this.randomService;
+        return this.fakeValuesService.random();
     }
 
     FakeValuesService fakeValuesService() {
